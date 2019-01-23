@@ -39,6 +39,7 @@ let C_EDITOR = "editor"
 let C_ILLUSTRATOR = "illustrator"
 let C_CREATIVEDIRECTOR = "creativeDirector"
 let C_SONG = "song"
+let C_CONTENT = "content"
 
 let C_IMAGEURL = "imageUrl"
 let C_PAGENUMBER = "pageNumber"

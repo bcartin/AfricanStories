@@ -83,6 +83,7 @@ class StoryCollection {
                     guard let demoImage1Url = result.value(forKey: C_DEMOIMAGE1URL) as? String else {return}
                     guard let demoImage2Url = result.value(forKey: C_DEMOIMAGE2URL) as? String else {return}
                     guard let demoImage3Url = result.value(forKey: C_DEMOIMAGE3URL) as? String else {return}
+                    guard let contentString = result.value(forKey: C_CONTENT) as? String else {return}
                     let storyDict = [
                         C_STORYID: storyId,
                         C_TITLE: title,
@@ -102,7 +103,8 @@ class StoryCollection {
                         C_COVERIMAGEURL: coverImageUrl,
                         C_DEMOIMAGE1URL: demoImage1Url,
                         C_DEMOIMAGE2URL: demoImage2Url,
-                        C_DEMOIMAGE3URL: demoImage3Url
+                        C_DEMOIMAGE3URL: demoImage3Url,
+                        C_CONTENT: contentString.components(separatedBy: ",")
                         ] as [String : Any]
                     let story = Story(storyDictionary: storyDict)
                     guard let imageData = result.value(forKey: C_COVERIMAGE) as? Data else {return}

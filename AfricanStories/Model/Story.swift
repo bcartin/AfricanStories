@@ -35,6 +35,7 @@ class Story {
     var demoImage1: UIImage?
     var demoImage2: UIImage?
     var demoImage3: UIImage?
+    var content: String
     
     var pages = [Page]()
     
@@ -58,6 +59,8 @@ class Story {
         self.demoImage1Url = storyDictionary[C_DEMOIMAGE1URL] as! String
         self.demoImage2Url = storyDictionary[C_DEMOIMAGE2URL] as! String
         self.demoImage3Url = storyDictionary[C_DEMOIMAGE3URL] as! String
+        let contentArray = storyDictionary[C_CONTENT] as! [String]
+        self.content = contentArray.joined(separator: ",")
     }
     
     func loadPagesFromCoreData() {
@@ -140,6 +143,7 @@ class Story {
             request.setValue(self.demoImage1Url, forKey: C_DEMOIMAGE1URL)
             request.setValue(self.demoImage2Url, forKey: C_DEMOIMAGE2URL)
             request.setValue(self.demoImage3Url, forKey: C_DEMOIMAGE3URL)
+            request.setValue(self.content, forKey: C_CONTENT)
             loadImage(from: self.coverImageUrl) { (imageData) in
                 request.setValue(imageData, forKey: C_COVERIMAGE)
                 self.loadImage(from: self.demoImage1Url, handler: { (demoImage1) in

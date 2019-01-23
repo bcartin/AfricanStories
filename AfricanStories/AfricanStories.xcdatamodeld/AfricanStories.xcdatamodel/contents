@@ -16,6 +16,7 @@
         <attribute name="ageGroup2" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="ageGroup3" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="author" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="country" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="coverImageUrl" optional="YES" attributeType="String" syncable="YES"/>
@@ -40,6 +41,6 @@
     <elements>
         <element name="Glossary" positionX="-54" positionY="135" width="128" height="75"/>
         <element name="Pages" positionX="-54" positionY="117" width="128" height="120"/>
-        <element name="Stories" positionX="-63" positionY="-18" width="128" height="405"/>
+        <element name="Stories" positionX="-63" positionY="-18" width="128" height="420"/>
     </elements>
 </model>

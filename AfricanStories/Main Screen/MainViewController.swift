@@ -272,6 +272,7 @@ class MainViewController: UIViewController, Alertable {
         storyDictionary[C_DEMOIMAGE1URL] = ""
         storyDictionary[C_DEMOIMAGE2URL] = ""
         storyDictionary[C_DEMOIMAGE3URL] = ""
+        storyDictionary[C_CONTENT] = []
         let lastCellStory = Story(storyDictionary: storyDictionary)
         filteredStories.append(lastCellStory)
     }
@@ -302,65 +303,99 @@ class MainViewController: UIViewController, Alertable {
     @objc fileprivate func completePurchase(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo else {return}
         guard let storyId = userInfo[C_STORYID] as? String else {return}
-        if storyId != "allStories" {
-            self.doanloadStory(storyId: storyId) { (error) in
+        let purchasedStory = stories.collection.filter({$0.storyId == storyId}).first
+        guard let contents = purchasedStory?.content.components(separatedBy: ",") else {return}
+        var count = 0
+        for contentId in contents {
+            guard let story = stories.collection.filter({$0.storyId == contentId}).first else {return}
+            if story.isPurchased {
+                count += 1
+                continue
+            }
+            self.downloadStory(storyId: story.storyId) { (error) in
                 if let err = error {
                     self.showAlert(title: "ERROR", msg: err.localizedDescription)
-                    print(err.localizedDescription)
-                    return
-                }
-                self.stories.collection.removeAll()
-                self.filteredStories.removeAll()
-                self.stories.loadStoriesFromCoreData(handler: { (error) in
-                    if let err = error {
-                        self.showAlert(title: "ERROR", msg: err.localizedDescription)
-                        print(err.localizedDescription)
-                        self.shouldPresentDownloadingContentView(false)
-                        return
-                    }
-                    self.filterStories()
-                    self.addLastCell()
-                    self.booksCollectionView.reloadData()
                     self.shouldPresentDownloadingContentView(false)
-                    self.showMessage(message: "Download Complete", center: self.view.center)
-                })
-            }
-        }
-        else {
-            var count = 0
-            for story in stories.collection {
-                if story.isPurchased {
-                    count += 1
-                    continue
+                    print(err.localizedDescription)
                 }
-                let storyId = story.storyId
-                self.doanloadStory(storyId: storyId) { (error) in
-                    if let err = error {
-                        self.showAlert(title: "ERROR", msg: err.localizedDescription)
-                        self.shouldPresentDownloadingContentView(false)
-                        print(err.localizedDescription)
-                    }
-                    count += 1
-                    if count == self.stories.collection.count {
-                        self.stories.collection.removeAll()
-                        self.filteredStories.removeAll()
-                        self.stories.loadStoriesFromCoreData(handler: { (error) in
-                            if let err = error {
-                                self.showAlert(title: "ERROR", msg: err.localizedDescription)
-                                print(err.localizedDescription)
-                                self.shouldPresentDownloadingContentView(false)
-                                return
-                            }
-                            self.filterStories()
-                            self.addLastCell()
-                            self.booksCollectionView.reloadData()
+                count += 1
+                if count == contents.count {
+                    self.stories.collection.removeAll()
+                    self.filteredStories.removeAll()
+                    self.stories.loadStoriesFromCoreData(handler: { (error) in
+                        if let err = error {
+                            self.showAlert(title: "ERROR", msg: err.localizedDescription)
+                            print(err.localizedDescription)
                             self.shouldPresentDownloadingContentView(false)
-                            self.showMessage(message: "Download Complete", center: self.view.center)
-                        })
-                    }
+                            return
+                        }
+                        self.filterStories()
+                        self.booksCollectionView.reloadData()
+                        self.shouldPresentDownloadingContentView(false)
+                        self.showMessage(message: "Download Complete", center: self.view.center)
+                    })
                 }
             }
         }
+//        if storyId != "allStories" {
+//            self.doanloadStory(storyId: storyId) { (error) in
+//                if let err = error {
+//                    self.showAlert(title: "ERROR", msg: err.localizedDescription)
+//                    print(err.localizedDescription)
+//                    return
+//                }
+//                self.stories.collection.removeAll()
+//                self.filteredStories.removeAll()
+//                self.stories.loadStoriesFromCoreData(handler: { (error) in
+//                    if let err = error {
+//                        self.showAlert(title: "ERROR", msg: err.localizedDescription)
+//                        print(err.localizedDescription)
+//                        self.shouldPresentDownloadingContentView(false)
+//                        return
+//                    }
+//                    self.filterStories()
+//                    self.addLastCell()
+//                    self.booksCollectionView.reloadData()
+//                    self.shouldPresentDownloadingContentView(false)
+//                    self.showMessage(message: "Download Complete", center: self.view.center)
+//                })
+//            }
+//        }
+//        else {
+//            var count = 0
+//            for story in stories.collection {
+//                if story.isPurchased {
+//                    count += 1
+//                    continue
+//                }
+//                let storyId = story.storyId
+//                self.doanloadStory(storyId: storyId) { (error) in
+//                    if let err = error {
+//                        self.showAlert(title: "ERROR", msg: err.localizedDescription)
+//                        self.shouldPresentDownloadingContentView(false)
+//                        print(err.localizedDescription)
+//                    }
+//                    count += 1
+//                    if count == self.stories.collection.count {
+//                        self.stories.collection.removeAll()
+//                        self.filteredStories.removeAll()
+//                        self.stories.loadStoriesFromCoreData(handler: { (error) in
+//                            if let err = error {
+//                                self.showAlert(title: "ERROR", msg: err.localizedDescription)
+//                                print(err.localizedDescription)
+//                                self.shouldPresentDownloadingContentView(false)
+//                                return
+//                            }
+//                            self.filterStories()
+//                            self.addLastCell()
+//                            self.booksCollectionView.reloadData()
+//                            self.shouldPresentDownloadingContentView(false)
+//                            self.showMessage(message: "Download Complete", center: self.view.center)
+//                        })
+//                    }
+//                }
+//            }
+//        }
     }
     
    
@@ -369,7 +404,7 @@ class MainViewController: UIViewController, Alertable {
         self.showAlert(title: "ERROR", msg: "Purchase ould not be completed. \nPlease try again")
     }
     
-    fileprivate func doanloadStory(storyId: String, handler: @escaping (_ error: Error?) -> Void) {
+    fileprivate func downloadStory(storyId: String, handler: @escaping (_ error: Error?) -> Void) {
         if storyId != "allStories" {
             let purchasedStory = stories.collection.filter({$0.storyId == storyId}).first
             purchasedStory?.updateIsPurchasedStatus(to: true)
@@ -385,7 +420,6 @@ class MainViewController: UIViewController, Alertable {
             handler(nil)
         }
     }
-    
     
 }
 

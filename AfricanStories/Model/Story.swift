@@ -14,7 +14,7 @@ class Story {
     
     let storyId: String
     let title: String
-    let isPurchased: Bool
+    let purchased: Bool
     let summary: String
     let totalPages: Int
     let tribe: String
@@ -42,7 +42,7 @@ class Story {
     init(storyDictionary: [String:Any]) {
         self.storyId = storyDictionary[C_STORYID] as! String
         self.title = storyDictionary[C_TITLE] as! String
-        self.isPurchased = storyDictionary[C_ISPURCHASED] as! Bool
+        self.purchased = storyDictionary[C_PURCHASED] as! Bool
         self.summary = storyDictionary[C_SUMMARY] as! String
         self.totalPages = storyDictionary[C_TOTALPAGES] as! Int
         self.tribe = storyDictionary[C_TRIBE] as? String ?? ""
@@ -126,7 +126,7 @@ class Story {
             let request = NSManagedObject(entity: entity, insertInto: managedContext)
             request.setValue(self.storyId, forKey: C_STORYID)
             request.setValue(self.title, forKey: C_TITLE)
-            request.setValue(self.isPurchased, forKey: C_ISPURCHASED)
+            request.setValue(self.purchased, forKey: C_PURCHASED)
             request.setValue(self.summary, forKey: C_SUMMARY)
             request.setValue(self.totalPages, forKey: C_TOTALPAGES)
             request.setValue(self.country, forKey: C_COUNTRY)
@@ -182,7 +182,7 @@ class Story {
             let results = try managedContext.fetch(request)
             if results.count > 0 {
                 for result in results as! [NSManagedObject] {
-                    result.setValue(status, forKey: C_ISPURCHASED)
+                    result.setValue(status, forKey: C_PURCHASED)
                     do{
                         try managedContext.save()
                     } catch let error as NSError {

@@ -14,14 +14,22 @@ import CoreData
 class StartController: UIViewController {
     
     let backgroundImage: UIImageView = {
-        let iv = UIImageView(image: #imageLiteral(resourceName: "africaBackground"))
+        let iv = UIImageView(image: #imageLiteral(resourceName: "AppOpeningScreen"))
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         return iv
     }()
     
-    let titleImage: UIImageView = {
-        let iv = UIImageView(image: #imageLiteral(resourceName: "title"))
+    let titleImageLeft: UIImageView = {
+        let iv = UIImageView(image: #imageLiteral(resourceName: "rubies"))
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        iv.alpha = 0
+        return iv
+    }()
+    
+    let titleImageRight: UIImageView = {
+        let iv = UIImageView(image: #imageLiteral(resourceName: "africa"))
         iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
         iv.alpha = 0
@@ -30,14 +38,20 @@ class StartController: UIViewController {
     
     let startButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("GET STARTED", for: .normal)
-        button.titleLabel?.font = UIFont.defaultFontLarge()
-        button.titleLabel?.textAlignment = .center
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 75
+        button.backgroundColor = .clear
         button.alpha = 0
         button.addTarget(self, action: #selector(startTapped), for: .touchUpInside)
         return button
+    }()
+    
+    let startLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Tap the elephant to start"
+        
+        label.textColor = .white
+        label.alpha = 0
+        label.textAlignment = .center
+        return label
     }()
     
     let animationView: LOTAnimationView = {
@@ -66,8 +80,6 @@ class StartController: UIViewController {
         UserDefaults.standard.set(0, forKey: C_FILTER)
         setupUI()
         displayTitle()
-        
-
     }
     
     func deleteCoreData() {
@@ -115,26 +127,40 @@ class StartController: UIViewController {
         view.addSubview(backgroundImage)
         backgroundImage.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         
-        view.addSubview(titleImage)
-        titleImage.centerHorizontaly(in: view, offset: 0)
-        titleImage.centerVertically(in: view, offset: -view.frame.height/4)
-        titleImage.setSizeAnchors(height: 150, width: view.frame.width - 200)
+        view.addSubview(titleImageLeft)
+        titleImageLeft.centerVertically(in: view, offset: 0)
+        titleImageLeft.centerHorizontaly(in: view, offset: -view.frame.width/3.1)
+//        titleImageLeft.anchor(top: nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 0)
+        titleImageLeft.setSizeAnchors(height: 150, width: view.frame.width/4)
         
-        view.addSubview(animationView)
-        animationView.centerHorizontaly(in: view, offset: 35)
-        animationView.centerVertically(in: view, offset: 50)
-        animationView.setSizeAnchors(height: 200, width: 200)
+        view.addSubview(titleImageRight)
+        titleImageRight.centerVertically(in: view, offset: 0)
+        titleImageRight.centerHorizontaly(in: view, offset: view.frame.width/3.1)
+//        titleImageRight.anchor(top: nil, left: nil, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 20)
+        titleImageRight.setSizeAnchors(height: 150, width: view.frame.width/4)
         
         view.addSubview(startButton)
         startButton.centerHorizontaly(in: view, offset: 0)
-        startButton.centerVertically(in: animationView, offset: 75)
-        startButton.setSizeAnchors(height: 150, width: 150)
+        startButton.centerVertically(in: view, offset: 0)
+        startButton.setSizeAnchors(height: 200, width: 200)
+
+        startLabel.font = UIFont.defaultFontLarge()
+        view.addSubview(startLabel)
+        startLabel.centerHorizontaly(in: view, offset: 0)
+        
+        switch deviceType {
+        case .iPhone:
+            startLabel.centerVertically(in: view, offset: -150)
+        case .iPad:
+            startLabel.centerVertically(in: view, offset: -view.frame.height / 4)
+        }
         
     }
     
     fileprivate func displayTitle() {
         UIView.animate(withDuration: 2, animations: {
-            self.titleImage.alpha = 1
+            self.titleImageLeft.alpha = 1
+            self.titleImageRight.alpha = 1
         }) { (finished) in
             self.checkIfFirstRun()
 
@@ -142,8 +168,11 @@ class StartController: UIViewController {
     }
     
     @objc fileprivate func startTapped() {
-        self.startButton.alpha = 0
-        self.animationView.play { (finished) in
+        UIView.animate(withDuration: 1, animations: {
+            self.startLabel.center.y = self.startLabel.center.y - self.view.frame.height / 2
+            self.titleImageRight.center.x = self.titleImageRight.center.x + self.view.frame.width / 2
+            self.titleImageLeft.center.x = self.titleImageLeft.center.x - self.view.frame.width / 2
+        }) { (finished) in
             let vc = MainViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         }
@@ -151,11 +180,10 @@ class StartController: UIViewController {
     }
     
     fileprivate func startBookAnimation() {
-        self.animationView.play(toProgress: 0.5, withCompletion: { (finished) in
-            UIView.animate(withDuration: 0.2, animations: {
-                self.startButton.alpha = 1
-            })
-        })
+        UIView.animate(withDuration: 0.5) {
+            self.startButton.alpha = 1
+            self.startLabel.alpha = 1
+        }
     }
 
     

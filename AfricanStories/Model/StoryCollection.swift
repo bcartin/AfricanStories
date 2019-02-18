@@ -30,7 +30,7 @@ class StoryCollection {
                         print(err.localizedDescription)
                         return
                     }
-                    if story.isPurchased {
+                    if story.purchased {
                         story.loadPagesFromWeb(handler: { (error) in
                             if let err = error {
                                 print(err.localizedDescription)
@@ -66,7 +66,7 @@ class StoryCollection {
                 for result in results as! [NSManagedObject] {
                     guard let storyId = result.value(forKey: C_STORYID) as? String else {return}
                     guard let title = result.value(forKey: C_TITLE) as? String else {return}
-                    guard let isPurchased = result.value(forKey: C_ISPURCHASED) as? Bool else {return}
+                    guard let purchased = result.value(forKey: C_PURCHASED) as? Bool else {return}
                     guard let summary = result.value(forKey: C_SUMMARY) as? String else {return}
                     guard let totalPages = result.value(forKey: C_TOTALPAGES) as? Int else {return}
                     guard let ageGroup1 = result.value(forKey: C_AGEGROUP1) as? Bool else {return}
@@ -87,7 +87,7 @@ class StoryCollection {
                     let storyDict = [
                         C_STORYID: storyId,
                         C_TITLE: title,
-                        C_ISPURCHASED: isPurchased,
+                        C_PURCHASED: purchased,
                         C_SUMMARY: summary,
                         C_TOTALPAGES: totalPages,
                         C_AGEGROUP1: ageGroup1,
@@ -109,7 +109,7 @@ class StoryCollection {
                     let story = Story(storyDictionary: storyDict)
                     guard let imageData = result.value(forKey: C_COVERIMAGE) as? Data else {return}
                     story.coverImage = UIImage(data: imageData)
-                    if isPurchased {
+                    if purchased {
                         DispatchQueue.main.async {
                             story.loadPagesFromCoreData()
                         }
@@ -123,9 +123,11 @@ class StoryCollection {
                         story.demoImage3 = UIImage(data: demoImage3)
                     }
                     self.collection.append(story)
-                    self.collection.sort { $0.isPurchased && !$1.isPurchased }
+                    self.collection.sort { $0.purchased && !$1.purchased }
                     booksSet.append(storyId)
                 }
+                let set = Set(self.booksSet)
+                IAPService.shared.getBooks(booksSet: set)
             }
             handler(nil)
         } catch let error as NSError {

@@ -44,6 +44,7 @@ extension IAPService: SKProductsRequestDelegate {
         self.products = response.products
         for product in response.products {
             productsPrice[product.productIdentifier] = product.price
+            print(product.productIdentifier, product.price)
         }
     }
 }

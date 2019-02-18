@@ -42,6 +42,13 @@ class MainViewController: UIViewController, Alertable {
         }
     }
     
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont.defaultFont()
+        return label
+    }()
+    
     
     
     let backgroundImage: UIImageView = {
@@ -111,8 +118,8 @@ class MainViewController: UIViewController, Alertable {
                 return
             }
             self.filterStories()
-            let set = Set(self.stories.booksSet)
-            IAPService.shared.getBooks(booksSet: set)
+//            let set = Set(self.stories.booksSet)
+//            IAPService.shared.getBooks(booksSet: set)
             NotificationCenter.default.addObserver(self, selector: #selector(self.completePurchase(_:)), name: .purchaseSuccesful, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(self.purchaseFailed(_:)), name: .purchaseFailed, object: nil)
         }
@@ -175,6 +182,10 @@ class MainViewController: UIViewController, Alertable {
         filterLabel.text = filter[0]
         view.addSubview(filterLabel)
         filterLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: filterButton.rightAnchor, bottom: nil, right: nil, paddingTop: 15, paddingLeft: 5, paddingBottom: 0, paddingRight: 0)
+        
+        view.addSubview(titleLabel)
+        titleLabel.centerHorizontaly(in: view, offset: 0)
+        titleLabel.anchor(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 5, paddingRight: 0)
 
     }
     
@@ -240,6 +251,7 @@ class MainViewController: UIViewController, Alertable {
         
         self.addLastCell()
         booksCollectionView.reloadData()
+        self.titleLabel.text = filteredStories[0].title
     }
     
     @objc fileprivate func restoreButtonTapped() {
@@ -257,7 +269,7 @@ class MainViewController: UIViewController, Alertable {
         var storyDictionary: [String:Any] = [:]
         storyDictionary[C_STORYID] = "lastCell"
         storyDictionary[C_TITLE] = "lastCell"
-        storyDictionary[C_ISPURCHASED] = true
+        storyDictionary[C_PURCHASED] = true
         storyDictionary[C_SUMMARY] = "lastCell"
         storyDictionary[C_TOTALPAGES] = 0
         storyDictionary[C_AGEGROUP1] = true
@@ -281,7 +293,7 @@ class MainViewController: UIViewController, Alertable {
         var storyDictionary: [String:Any] = [:]
         storyDictionary[C_STORYID] = "allStories"
         storyDictionary[C_TITLE] = "allStories"
-        storyDictionary[C_ISPURCHASED] = false
+        storyDictionary[C_PURCHASED] = false
         storyDictionary[C_SUMMARY] = "Purchase all of our stories for a discounted price!"
         storyDictionary[C_TOTALPAGES] = 0
         storyDictionary[C_AGEGROUP1] = false
@@ -308,7 +320,7 @@ class MainViewController: UIViewController, Alertable {
         var count = 0
         for contentId in contents {
             guard let story = stories.collection.filter({$0.storyId == contentId}).first else {return}
-            if story.isPurchased {
+            if story.purchased {
                 count += 1
                 continue
             }
@@ -448,11 +460,7 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             if let price = productsPrice[storyId] {
                 cell.price = price
             }
-            else {
-                cell.price = 1.99
-            }
-//            cell.price = filteredStories[indexPath.item].price
-            cell.isPurchased = filteredStories[indexPath.item].isPurchased
+            cell.isPurchased = filteredStories[indexPath.item].purchased
             if cell.frameColor == nil {
                 cell.frameColor = nextFrameColor
                 switch nextFrameColor {
@@ -476,6 +484,7 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             cell.isPurchased = true
             cell.pagesLabel.text = ""
         }
+        
         return cell
     }
     
@@ -487,7 +496,7 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             }
             guard let cell = selectedCell() else {return}
             transitionThumbnail = cell.bookCoverImage
-            if filteredStories[indexPath.item].isPurchased {
+            if filteredStories[indexPath.item].purchased {
                 player.stop()
                 let storyDetailController = StoryController()
                 let pages = self.filteredStories[indexPath.item].pages
@@ -514,6 +523,24 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     }
     
     
+}
+
+extension MainViewController: UIScrollViewDelegate {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let indexPathsArray = booksCollectionView.indexPathsForVisibleItems
+        var indexArray: [Int] = []
+        for indexPath in indexPathsArray {
+            indexArray.append(indexPath.item)
+        }
+        indexArray.sort{$0 < $1}
+        if indexArray.count == 3 {
+            indexArray.removeFirst()
+        }
+        guard let index = indexArray.first else {return}
+        
+        titleLabel.text = filteredStories[index].title
+    }
+
 }
 
 extension MainViewController: UINavigationControllerDelegate, UIViewControllerTransitioningDelegate {

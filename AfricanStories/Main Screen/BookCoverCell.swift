@@ -27,7 +27,7 @@ class BookCoverCell: UICollectionViewCell {
     
     var price: NSDecimalNumber = 0 {
         didSet {
-            let priceString = "$\(price)\n BUY"
+            let priceString = "BUY $\(price)"
             self.buyButton.setTitle(priceString, for: .normal)
         }
     }
@@ -61,13 +61,14 @@ class BookCoverCell: UICollectionViewCell {
     
     let buyImageView: UIImageView = {
         let iv = UIImageView(image: #imageLiteral(resourceName: "priceTag2"))
+        iv.contentMode = .scaleToFill
         return iv
     }()
     
     let buyButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.white, for: .normal)
-        button.setTitle("BUY\n $1.99", for: .normal)
+        button.setTitle("BUY", for: .normal)
         button.titleLabel?.font = UIFont.defaultFont()
         button.titleLabel?.numberOfLines = 0
         button.titleLabel?.textAlignment = .center
@@ -108,9 +109,13 @@ class BookCoverCell: UICollectionViewCell {
         
         addSubview(pagesLabel)
         pagesLabel.centerHorizontaly(in: bookmarkImage, offset: 0)
-        pagesLabel.anchor(top: bookmarkImage.topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 5, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
-        
-//        addBuyButton()
+        switch deviceType {
+        case .iPad:
+            pagesLabel.centerVertically(in: bookmarkImage, offset: -20)
+        case .iPhone:
+            pagesLabel.centerVertically(in: bookmarkImage, offset: -5)
+        }
+
 
     }
     
@@ -124,18 +129,20 @@ class BookCoverCell: UICollectionViewCell {
         
         switch deviceType {
         case .iPad:
-            buyImageView.setSizeAnchors(height: 150, width: 150)
+            buyImageView.setSizeAnchors(height: self.frame.height * 0.2, width: 200)
         case .iPhone:
-            buyImageView.setSizeAnchors(height: 75, width: 75)
+            buyImageView.setSizeAnchors(height: self.frame.height * 0.2, width: 100)
         }
         
         addSubview(buyImageView)
-        buyImageView.anchor(top: topAnchor, left: leftAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 30, paddingBottom: 0, paddingRight: 0)
+//        buyImageView.anchor(top: topAnchor, left: leftAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 30, paddingBottom: 0, paddingRight: 0)
+            
+        buyImageView.anchor(top: nil, left: nil, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 50)
         
         buyButton.addTarget(self, action: #selector(buyTapped), for: .touchUpInside)
         addSubview(buyButton)
         buyButton.centerHorizontaly(in: buyImageView, offset: 0)
-        buyButton.centerVertically(in: buyImageView, offset: -10)
+        buyButton.centerVertically(in: buyImageView, offset: -5)
             
         }
     }

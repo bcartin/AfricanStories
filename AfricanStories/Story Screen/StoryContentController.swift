@@ -312,7 +312,7 @@ class StoryContentController: UIViewController {
         
         let iconsLabel: UILabel = {
             let attributedText = NSMutableAttributedString(string: "Icons: ", attributes: [NSAttributedString.Key.font: UIFont.defaultFontSmall(), NSAttributedString.Key.foregroundColor: UIColor.white])
-            attributedText.append(NSMutableAttributedString(string: "Google, Freepik, Dave Gandy", attributes: [NSAttributedString.Key.font: UIFont.defaultFontSmall(), NSAttributedString.Key.foregroundColor: UIColor.white]))
+            attributedText.append(NSMutableAttributedString(string: "Google, Freepik, Dave Gandy, Oluwagbenga Jesubanjo", attributes: [NSAttributedString.Key.font: UIFont.defaultFontSmall(), NSAttributedString.Key.foregroundColor: UIColor.white]))
             let label = UILabel()
             label.attributedText = attributedText
             label.textAlignment = .center

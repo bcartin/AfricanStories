@@ -541,6 +541,7 @@
 			baseConfigurationReference = 5A319DC318E756D970D72710 /* Pods-AfricanStories.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T9FW367V75;
 				INFOPLIST_FILE = "$(SRCROOT)/AfricanStories/Info.plist";
@@ -551,6 +552,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rubiesproject.AfricanStories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -561,6 +563,7 @@
 			baseConfigurationReference = 6100A9C7D6F1C54D608AEA0E /* Pods-AfricanStories.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T9FW367V75;
 				INFOPLIST_FILE = "$(SRCROOT)/AfricanStories/Info.plist";
@@ -571,6 +574,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rubiesproject.AfricanStories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

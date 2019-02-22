@@ -230,12 +230,18 @@ class MainViewController: UIViewController, Alertable {
         filterPicker.selectRow(0, inComponent: 0, animated: false)
         vc.view.addSubview(filterPicker)
         filterPicker.anchor(top: vc.view.safeAreaLayoutGuide.topAnchor, left: vc.view.safeAreaLayoutGuide.leftAnchor, bottom: vc.view.safeAreaLayoutGuide.bottomAnchor, right: vc.view.safeAreaLayoutGuide.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
-        let filterAlert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let filterAlert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.alert)
         filterAlert.setValue(vc, forKey: "contentViewController")
         filterAlert.addAction(UIAlertAction(title: "Done", style: .cancel, handler: { (done) in
             self.filterLabel.text = self.filter[filterPicker.selectedRow(inComponent: 0)]
             self.storyFilter = filterPicker.selectedRow(inComponent: 0)
         }))
+//        filterAlert.modalPresentationStyle = .popover
+//        if let popoverController = filterAlert.popoverPresentationController {
+//            popoverController.sourceView = self.view
+//            popoverController.sourceRect = CGRect(x: 50, y: 50, width: 200, height: 150)
+//            self.present(filterAlert, animated: true)
+//        }
         self.present(filterAlert, animated: true)
     }
     

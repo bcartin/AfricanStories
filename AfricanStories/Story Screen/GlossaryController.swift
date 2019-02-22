@@ -65,8 +65,8 @@ extension GlossaryController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = glossaryTableView.dequeueReusableCell(withIdentifier: "CELL", for: indexPath)
-        let attributedText = NSMutableAttributedString(string: glossary.items[indexPath.item].word + ": ", attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: UIColor.black])
-        attributedText.append(NSMutableAttributedString(string: glossary.items[indexPath.item].meaning, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: UIColor.black]))
+        let attributedText = NSMutableAttributedString(string: glossary.items[indexPath.item].word + ": ", attributes: [NSAttributedString.Key.font: UIFont.defaultFont(), NSAttributedString.Key.foregroundColor: UIColor.black])
+        attributedText.append(NSMutableAttributedString(string: glossary.items[indexPath.item].meaning, attributes: [NSAttributedString.Key.font: UIFont.defaultFont(), NSAttributedString.Key.foregroundColor: UIColor.gray]))
         cell.backgroundColor = UIColor.clear
         cell.textLabel?.numberOfLines = 0
         cell.textLabel?.lineBreakMode = .byWordWrapping

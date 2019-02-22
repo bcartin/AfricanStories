@@ -140,7 +140,7 @@ class StoryContentController: UIViewController {
         glossaryButton.anchor(top: pageNumberLabel.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: nil, paddingTop: 30, paddingLeft: 30, paddingBottom: 0, paddingRight: 0)
 
         view.addSubview(textContainerView)
-        textContainerView.anchor(top: nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 2, paddingRight: 10)
+        textContainerView.anchor(top: nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 10, paddingRight: 10)
 
         invisibleLabel.text = invisibleText
         textContainerView.addSubview(invisibleLabel)
@@ -340,12 +340,19 @@ class StoryContentController: UIViewController {
         
 
         view.addSubview(creditsView)
+        
         creditsView.anchor(top: view.topAnchor, left: nil, bottom: view.bottomAnchor, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         creditsView.setSizeAnchors(height: nil, width: view.frame.width / 1.5)
         creditsView.centerHorizontaly(in: view, offset: 0)
         
         creditsView.addSubview(endTitle)
-        endTitle.anchor(top: creditsView.topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 20, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        switch deviceType {
+        case .iPhone:
+            endTitle.anchor(top: creditsView.topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 20, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        case .iPad:
+            endTitle.anchor(top: creditsView.topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 200, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        }
+        
         endTitle.centerHorizontaly(in: creditsView, offset: 0)
         
         let creditsStackView = UIStackView(arrangedSubviews: [authorLabel, illustratorLabel, editorLabel, creativeLabel])
@@ -402,23 +409,18 @@ class StoryContentController: UIViewController {
     
     @objc fileprivate func shareTapped() {
         
-        guard let url = URL(string: "https://garsontech.com") else {return}
-//        guard let imageUrl = URL(string: "https://firebasestorage.googleapis.com/v0/b/storiesdev-21e8b.appspot.com/o/RubiesIcon1.jpeg?alt=media&token=16c59d2d-9189-497d-8478-50ebbfc0a6bc") else {return}
-//
-//        let content = LinkShareContent(url: url, title: "This Title", description: "This Description", quote: nil, imageURL: imageUrl)
-//
-//        let shareDialog = ShareDialog(content: content)
-//        do {
-//            try shareDialog.show()
-//        }
-//        catch {
-//            print("Unexpected error: \(error).")
-//        }
-        
+        guard let url = URL(string: "http://www.familyrubies.com/app") else {return}
         let shareText = "Just read a great story on Rubies Africa!"
         
         let items: [Any] = [shareText, url]
         let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        if deviceType == .iPad {
+            ac.modalPresentationStyle = .popover
+            if let popoverController = ac.popoverPresentationController {
+                popoverController.sourceView = self.view
+                popoverController.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            }
+        }
         present(ac, animated: true)
         
     }

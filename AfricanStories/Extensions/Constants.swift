@@ -58,6 +58,8 @@ let C_FAILED = "failed"
 let C_PURCHASING = "purchasing"
 let C_RESTORED = "restored"
 
+let C_ERROR = "Error"
+
 //User Defaults
 let C_FIRSTLOADCOMPLETE = "firstLoadComplete"
 let C_FILTER = "filter"

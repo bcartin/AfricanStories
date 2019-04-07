@@ -118,8 +118,6 @@ class MainViewController: UIViewController, Alertable {
                 return
             }
             self.filterStories()
-//            let set = Set(self.stories.booksSet)
-//            IAPService.shared.getBooks(booksSet: set)
             NotificationCenter.default.addObserver(self, selector: #selector(self.completePurchase(_:)), name: .purchaseSuccesful, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(self.purchaseFailed(_:)), name: .purchaseFailed, object: nil)
         }
@@ -236,12 +234,6 @@ class MainViewController: UIViewController, Alertable {
             self.filterLabel.text = self.filter[filterPicker.selectedRow(inComponent: 0)]
             self.storyFilter = filterPicker.selectedRow(inComponent: 0)
         }))
-//        filterAlert.modalPresentationStyle = .popover
-//        if let popoverController = filterAlert.popoverPresentationController {
-//            popoverController.sourceView = self.view
-//            popoverController.sourceRect = CGRect(x: 50, y: 50, width: 200, height: 150)
-//            self.present(filterAlert, animated: true)
-//        }
         self.present(filterAlert, animated: true)
     }
     
@@ -261,20 +253,25 @@ class MainViewController: UIViewController, Alertable {
     }
     
     @objc fileprivate func restoreButtonTapped() {
-        self.shouldPresentDownloadingContentView(true)
-        IAPService.shared.restorePurchases()
+        if Internet.isConnected() {
+            showMessageScreen(message: "Restoring your purchases involves downloading a large amount of data, it is recommended that you're connected to a wifi network before downloading new content.")
+        }
+        else {
+            self.showAlert(title: "Error", msg: "Not connected to the internet")
+        }
     }
     
     @objc fileprivate func contactButtonTapped() {
         
         let url = URL(string: "mailto:info@familyrubies.com")
         UIApplication.shared.open(url!, options: [:], completionHandler: nil)
+        
     }
     
     fileprivate func addLastCell() {
         var storyDictionary: [String:Any] = [:]
         storyDictionary[C_STORYID] = "lastCell"
-        storyDictionary[C_TITLE] = "lastCell"
+        storyDictionary[C_TITLE] = "More Coming Soon"
         storyDictionary[C_PURCHASED] = true
         storyDictionary[C_SUMMARY] = "lastCell"
         storyDictionary[C_TOTALPAGES] = 0
@@ -295,148 +292,186 @@ class MainViewController: UIViewController, Alertable {
         filteredStories.append(lastCellStory)
     }
     
-    fileprivate func addFirstCell() {
-        var storyDictionary: [String:Any] = [:]
-        storyDictionary[C_STORYID] = "allStories"
-        storyDictionary[C_TITLE] = "allStories"
-        storyDictionary[C_PURCHASED] = false
-        storyDictionary[C_SUMMARY] = "Purchase all of our stories for a discounted price!"
-        storyDictionary[C_TOTALPAGES] = 0
-        storyDictionary[C_AGEGROUP1] = false
-        storyDictionary[C_AGEGROUP2] = false
-        storyDictionary[C_AGEGROUP3] = false
-        storyDictionary[C_AUTHOR] = ""
-        storyDictionary[C_EDITOR] = ""
-        storyDictionary[C_ILLUSTRATOR] = ""
-        storyDictionary[C_CREATIVEDIRECTOR] = ""
-        storyDictionary[C_SONG] = ""
-        storyDictionary[C_COVERIMAGEURL] = ""
-        storyDictionary[C_DEMOIMAGE1URL] = ""
-        storyDictionary[C_DEMOIMAGE2URL] = ""
-        storyDictionary[C_DEMOIMAGE3URL] = ""
-        let firstCellStory = Story(storyDictionary: storyDictionary)
-        filteredStories.insert(firstCellStory, at: 0)
+    fileprivate func showMessageScreen(message: String) {
+        let containerView: UIView = {
+            let view = UIView()
+            view.tag = 99
+            view.backgroundColor = UIColor(white: 0, alpha: 0.8)
+            return view
+        }()
+        
+        let messageLabel: UILabel = {
+            let label = UILabel()
+            label.font = UIFont.defaultFont()
+            label.text = message
+            label.textColor = .white
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            return label
+        }()
+        
+        let continueButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setTitleColor(.white, for: .normal)
+            button.setTitle("Continue", for: .normal)
+            button.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
+            return button
+        }()
+        
+        let laterButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setTitleColor(.white, for: .normal)
+            button.setTitle("Do It Later", for: .normal)
+            button.addTarget(self, action: #selector(laterTapped), for: .touchUpInside)
+            return button
+        }()
+        
+        view.addSubview(containerView)
+        containerView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        
+        containerView.addSubview(messageLabel)
+        messageLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 30, paddingBottom: 0, paddingRight: 30)
+        messageLabel.centerVertically(in: containerView, offset: -50)
+        
+        let buttonsStackView = UIStackView(arrangedSubviews: [continueButton, laterButton])
+        buttonsStackView.axis = .horizontal
+        buttonsStackView.spacing = 100
+        
+        containerView.addSubview(buttonsStackView)
+        buttonsStackView.centerHorizontaly(in: containerView, offset: 0)
+        buttonsStackView.anchor(top: messageLabel.bottomAnchor, left: nil, bottom: nil, right: nil, paddingTop: 50, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+    }
+    
+    @objc fileprivate func laterTapped() {
+        let messageView = self.view.viewWithTag(99)
+        messageView?.removeFromSuperview()
+    }
+    
+    @objc fileprivate func continueTapped() {
+        let messageView = self.view.viewWithTag(99)
+        messageView?.removeFromSuperview()
+        
+        self.shouldPresentDownloadingContentView(true)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(3)) {
+//            self.deleteCoreData()
+            self.downloadUpdates()
+        }
+    }
+    
+    func deleteCoreData() {
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        let context = delegate.persistentContainer.viewContext
+        
+        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: C_STORIES)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+        
+        do {
+            try context.execute(deleteRequest)
+            try context.save()
+            print("Stories Cleared")
+        } catch {
+            self.shouldPresentDownloadingContentView(false)
+            self.showAlert(title: C_ERROR, msg: "There was an error. Please Try Again")
+        }
+        
+        let pageDeleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: C_PAGES)
+        let pageDeleteRequest = NSBatchDeleteRequest(fetchRequest: pageDeleteFetch)
+        
+        do {
+            try context.execute(pageDeleteRequest)
+            try context.save()
+            print("Pages Cleared")
+        } catch {
+            self.shouldPresentDownloadingContentView(false)
+            self.showAlert(title: C_ERROR, msg: "There was an error. Please Try Again")
+        }
+        
+        let glossaryDeleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: C_GLOSSARY)
+        let glossaryDeleteRequest = NSBatchDeleteRequest(fetchRequest: glossaryDeleteFetch)
+        
+        do {
+            try context.execute(glossaryDeleteRequest)
+            try context.save()
+            print("Glossary Cleared")
+        } catch {
+            self.shouldPresentDownloadingContentView(false)
+            self.showAlert(title: C_ERROR, msg: "There was an error. Please Try Again")
+        }
+        UserDefaults.standard.set(false, forKey: C_FIRSTLOADCOMPLETE)
+        UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
+    }
+    
+    fileprivate func downloadUpdates() {
+        downloadStories()
+        downloadGlossary()
+    }
+    
+    fileprivate func downloadGlossary() {
+        let glossary = GlossaryList()
+        glossary.loadWordsFromWeb()
+    }
+    
+    fileprivate func downloadStories() {
+        DataService.shared.savePreloadedStoriesToCoreData { (error) in
+            if let err = error {
+                self.shouldPresentDownloadingContentView(false)
+                self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
+                return
+            }
+            DataService.shared.saveFirstStoryPages(handler: { (error) in
+                if let err = error {
+                    self.shouldPresentDownloadingContentView(false)
+                    self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                    UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
+                    return
+                }
+            })
+            self.downloadWebStories()
+            IAPService.shared.restorePurchases()
+        }
+    }
+    
+    fileprivate func downloadWebStories() {
+        DataService.shared.downloadStoriesfromWeb { (error) in
+            if let err = error {
+                self.shouldPresentDownloadingContentView(false)
+                self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
+                return
+            }
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            let lastUpdateDateString = formatter.string(from: Date())
+            UserDefaults.standard.set(lastUpdateDateString, forKey: C_LASTUPDATE)
+        }
     }
     
     @objc fileprivate func completePurchase(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo else {return}
-        guard let storyId = userInfo[C_STORYID] as? String else {return}
-        let purchasedStory = stories.collection.filter({$0.storyId == storyId}).first
-        guard let contents = purchasedStory?.content.components(separatedBy: ",") else {return}
-        var count = 0
-        for contentId in contents {
-            guard let story = stories.collection.filter({$0.storyId == contentId}).first else {return}
-            if story.purchased {
-                count += 1
-                continue
+        self.finishRestore()
+    }
+    
+    fileprivate func finishRestore() {
+        self.stories.collection.removeAll()
+        self.filteredStories.removeAll()
+        self.stories.loadStoriesFromCoreData(handler: { (error) in
+            if let err = error {
+                self.shouldPresentDownloadingContentView(false)
+                self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                return
             }
-            self.downloadStory(storyId: story.storyId) { (error) in
-                if let err = error {
-                    self.showAlert(title: "ERROR", msg: err.localizedDescription)
-                    self.shouldPresentDownloadingContentView(false)
-                    print(err.localizedDescription)
-                }
-                count += 1
-                if count == contents.count {
-                    self.stories.collection.removeAll()
-                    self.filteredStories.removeAll()
-                    self.stories.loadStoriesFromCoreData(handler: { (error) in
-                        if let err = error {
-                            self.showAlert(title: "ERROR", msg: err.localizedDescription)
-                            print(err.localizedDescription)
-                            self.shouldPresentDownloadingContentView(false)
-                            return
-                        }
-                        self.filterStories()
-                        self.booksCollectionView.reloadData()
-                        self.shouldPresentDownloadingContentView(false)
-                        self.showMessage(message: "Download Complete", center: self.view.center)
-                    })
-                }
-            }
-        }
-//        if storyId != "allStories" {
-//            self.doanloadStory(storyId: storyId) { (error) in
-//                if let err = error {
-//                    self.showAlert(title: "ERROR", msg: err.localizedDescription)
-//                    print(err.localizedDescription)
-//                    return
-//                }
-//                self.stories.collection.removeAll()
-//                self.filteredStories.removeAll()
-//                self.stories.loadStoriesFromCoreData(handler: { (error) in
-//                    if let err = error {
-//                        self.showAlert(title: "ERROR", msg: err.localizedDescription)
-//                        print(err.localizedDescription)
-//                        self.shouldPresentDownloadingContentView(false)
-//                        return
-//                    }
-//                    self.filterStories()
-//                    self.addLastCell()
-//                    self.booksCollectionView.reloadData()
-//                    self.shouldPresentDownloadingContentView(false)
-//                    self.showMessage(message: "Download Complete", center: self.view.center)
-//                })
-//            }
-//        }
-//        else {
-//            var count = 0
-//            for story in stories.collection {
-//                if story.isPurchased {
-//                    count += 1
-//                    continue
-//                }
-//                let storyId = story.storyId
-//                self.doanloadStory(storyId: storyId) { (error) in
-//                    if let err = error {
-//                        self.showAlert(title: "ERROR", msg: err.localizedDescription)
-//                        self.shouldPresentDownloadingContentView(false)
-//                        print(err.localizedDescription)
-//                    }
-//                    count += 1
-//                    if count == self.stories.collection.count {
-//                        self.stories.collection.removeAll()
-//                        self.filteredStories.removeAll()
-//                        self.stories.loadStoriesFromCoreData(handler: { (error) in
-//                            if let err = error {
-//                                self.showAlert(title: "ERROR", msg: err.localizedDescription)
-//                                print(err.localizedDescription)
-//                                self.shouldPresentDownloadingContentView(false)
-//                                return
-//                            }
-//                            self.filterStories()
-//                            self.addLastCell()
-//                            self.booksCollectionView.reloadData()
-//                            self.shouldPresentDownloadingContentView(false)
-//                            self.showMessage(message: "Download Complete", center: self.view.center)
-//                        })
-//                    }
-//                }
-//            }
-//        }
+            
+            self.filterStories()
+            self.booksCollectionView.reloadData()
+            self.shouldPresentDownloadingContentView(false)
+            self.showMessage(message: "Download Complete", center: self.view.center)
+        })
     }
     
    
     
     @objc fileprivate func purchaseFailed(_ notification: NSNotification) {
-        self.showAlert(title: "ERROR", msg: "Purchase ould not be completed. \nPlease try again")
-    }
-    
-    fileprivate func downloadStory(storyId: String, handler: @escaping (_ error: Error?) -> Void) {
-        if storyId != "allStories" {
-            let purchasedStory = stories.collection.filter({$0.storyId == storyId}).first
-            purchasedStory?.updateIsPurchasedStatus(to: true)
-            purchasedStory?.loadPagesFromWeb(handler: { (error) in
-                if let err = error {
-                    handler(err)
-                    return
-                }
-                handler(nil)
-            })
-        }
-        else {
-            handler(nil)
-        }
+        self.showAlert(title: "ERROR", msg: "Purchase could not be completed. \nPlease try again")
     }
     
 }
@@ -504,15 +539,19 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             transitionThumbnail = cell.bookCoverImage
             if filteredStories[indexPath.item].purchased {
                 player.stop()
-                let storyDetailController = StoryController()
-                let pages = self.filteredStories[indexPath.item].pages
-                storyDetailController.pages = pages
-                storyDetailController.story = self.filteredStories[indexPath.item]
-                DispatchQueue.main.async {
-                    self.navigationController?.pushViewController(storyDetailController, animated: true)
+                let story = self.filteredStories[indexPath.item]
+                if story.pages.count == story.totalPages {
+                    presentStory(story: story)
                 }
-                
-                
+                else {
+                    story.loadPagesFromCoreData { (error) in
+                        if let err = error {
+                            self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                            return
+                        }
+                        self.presentStory(story: story)
+                    }
+                }
             }
             else {
                 let vc = PreviewController()
@@ -528,6 +567,16 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         
     }
     
+    func presentStory(story: Story) {
+        let storyDetailController = StoryController()
+        let pages = story.pages
+        storyDetailController.pages = pages
+        storyDetailController.story = story
+        DispatchQueue.main.async {
+            self.navigationController?.pushViewController(storyDetailController, animated: true)
+        }
+    }
+    
     
 }
 
@@ -541,9 +590,9 @@ extension MainViewController: UIScrollViewDelegate {
         indexArray.sort{$0 < $1}
         if indexArray.count == 3 {
             indexArray.removeFirst()
+            indexArray.removeLast()
         }
-        guard let index = indexArray.first else {return}
-        
+        guard let index = indexArray.last else {return}
         titleLabel.text = filteredStories[index].title
     }
 

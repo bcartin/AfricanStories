@@ -11,7 +11,7 @@ import Lottie
 import Firebase
 import CoreData
 
-class StartController: UIViewController {
+class StartController: UIViewController, Alertable {
     
     let backgroundImage: UIImageView = {
         let iv = UIImageView(image: #imageLiteral(resourceName: "AppOpeningScreen"))
@@ -66,7 +66,7 @@ class StartController: UIViewController {
         return view
     }()
     
-    let firstLoadContainerView: UIView = {
+    let loadingContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(white: 0, alpha: 0.8)
         return view
@@ -79,7 +79,8 @@ class StartController: UIViewController {
         
         UserDefaults.standard.set(0, forKey: C_FILTER)
         setupUI()
-        displayTitle()
+        checkIfFirstRun()
+        
     }
     
     func deleteCoreData() {
@@ -120,6 +121,7 @@ class StartController: UIViewController {
         }
         
         UserDefaults.standard.set(false, forKey: C_FIRSTLOADCOMPLETE)
+        UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
     }
     
     fileprivate func setupUI() {
@@ -130,13 +132,11 @@ class StartController: UIViewController {
         view.addSubview(titleImageLeft)
         titleImageLeft.centerVertically(in: view, offset: 0)
         titleImageLeft.centerHorizontaly(in: view, offset: -view.frame.width/3.1)
-//        titleImageLeft.anchor(top: nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 0)
         titleImageLeft.setSizeAnchors(height: 150, width: view.frame.width/4)
         
         view.addSubview(titleImageRight)
         titleImageRight.centerVertically(in: view, offset: 0)
         titleImageRight.centerHorizontaly(in: view, offset: view.frame.width/3.1)
-//        titleImageRight.anchor(top: nil, left: nil, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 20)
         titleImageRight.setSizeAnchors(height: 150, width: view.frame.width/4)
         
         view.addSubview(startButton)
@@ -162,8 +162,10 @@ class StartController: UIViewController {
             self.titleImageLeft.alpha = 1
             self.titleImageRight.alpha = 1
         }) { (finished) in
-            self.checkIfFirstRun()
-
+            UIView.animate(withDuration: 0.5) {
+                self.startButton.alpha = 1
+                self.startLabel.alpha = 1
+            }
         }
     }
     
@@ -179,90 +181,89 @@ class StartController: UIViewController {
         
     }
     
-    fileprivate func startBookAnimation() {
-        UIView.animate(withDuration: 0.5) {
-            self.startButton.alpha = 1
-            self.startLabel.alpha = 1
-        }
-    }
-
-    
     @objc fileprivate func checkIfFirstRun() {
         let firstLoadComplete = UserDefaults.standard.bool(forKey: C_FIRSTLOADCOMPLETE)
-        if firstLoadComplete {
-            //if first run is complete
-            if Internet.isConnected() {
+        if (!firstLoadComplete) {
+            DataService.shared.savePreloadedStoriesToCoreData { (error) in
+                if let err = error {
+                    self.shouldPresentDownloadingContentView(false)
+                    self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                    UserDefaults.standard.set(false, forKey: C_FIRSTLOADCOMPLETE)
+                    return
+                }
+                DataService.shared.saveFirstStoryPages(handler: { (error) in
+                    if let err = error {
+                        self.shouldPresentDownloadingContentView(false)
+                        self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                        UserDefaults.standard.set(false, forKey: C_FIRSTLOADCOMPLETE)
+                        return
+                    }
+                    UserDefaults.standard.set(true, forKey: C_FIRSTLOADCOMPLETE)
+                })
                 self.checkIfUpdateAvailable { (updateAvailable) in
                     if updateAvailable {
-                        print("UPDATE AVAILABLE")
-                        self.showFirstLoadScreen(message: "Downloading New Content. Please Wait")
-                        self.loadStories()
-                        self.loadGlossary()
+                        self.showMessageScreen(message: "New Content Available! \n \n Getting new content involves downloading a large amount of data, it is recommended that you're connected to a wifi network before downloading new content.")
                     }
                     else {
-                        self.startBookAnimation()
+                        self.displayTitle()
                     }
                 }
             }
-            else {
-                self.startBookAnimation()
-            }
         }
         else {
-            //if first run has not been done
-            if Internet.isConnected() {
-                //Do first Load
-                self.showFirstLoadScreen(message: "The application is getting ready for first use. Please wait.")
-                self.loadStories()
-                self.loadGlossary()
-            }
-            else {
-                //Show error screen.
-                self.showFirstLoadErrorScreen()
+            self.checkIfUpdateAvailable { (updateAvailable) in
+                if updateAvailable {
+                    self.showMessageScreen(message: "New Content Available! \n \n Getting new content involves downloading a large amount of data, it is recommended that you're connected to a wifi network before downloading new content.")
+                }
+                else {
+                    self.displayTitle()
+                }
             }
         }
     }
     
-    fileprivate func loadGlossary() {
+    fileprivate func downloadGlossary() {
         let glossary = GlossaryList()
         glossary.loadWordsFromWeb()
     }
     
-    fileprivate func loadStories() {
-        let Stories = StoryCollection()
-        Stories.loadStoriesFromWeb { (error) in
+    fileprivate func downloadStories() {
+        DataService.shared.downloadStoriesfromWeb { (error) in
+            self.loadingContainerView.removeFromSuperview()
+            self.displayTitle()
             if let err = error {
+                self.showAlert(title: "ERROR", msg: "There was an error downloading new content.")
                 print(err.localizedDescription)
+                UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
                 return
             }
-            self.firstLoadContainerView.removeFromSuperview()
-            self.startBookAnimation()
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
             let lastUpdateDateString = formatter.string(from: Date())
-            UserDefaults.standard.set(true, forKey: C_FIRSTLOADCOMPLETE)
             UserDefaults.standard.set(lastUpdateDateString, forKey: C_LASTUPDATE)
         }
     }
     
     fileprivate func checkIfUpdateAvailable(handler: @escaping (_ updateAvailable: Bool) -> Void) {
-        Database.database().reference().child(C_LASTUPDATE).observe(.value) { (snapshot) in
-            let serverLastUpdateString = snapshot.value as! String
-            guard let appLastUpdateString = UserDefaults.standard.string(forKey: C_LASTUPDATE) else {return}
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            guard let serverLastUpdateDate = formatter.date(from: serverLastUpdateString) else {return}
-            guard let appLastUpdateDate = formatter.date(from: appLastUpdateString) else {return}
-            let newUpdate = serverLastUpdateDate > appLastUpdateDate ? true : false
-            handler(newUpdate)
+        if Internet.isConnected() {
+            Database.database().reference().child(C_LASTUPDATE).observe(.value) { (snapshot) in
+                let serverLastUpdateString = snapshot.value as! String
+                let appLastUpdateString = UserDefaults.standard.string(forKey: C_LASTUPDATE) ?? "1999-01-01"
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                guard let serverLastUpdateDate = formatter.date(from: serverLastUpdateString) else {return}
+                guard let appLastUpdateDate = formatter.date(from: appLastUpdateString) else {return}
+                let newUpdate = serverLastUpdateDate > appLastUpdateDate ? true : false
+                handler(newUpdate)
+            }
+        }
+        else {
+            handler(false)
         }
         
     }
     
-    
-
-    
-    fileprivate func showFirstLoadErrorScreen() {
+    fileprivate func showNoConnectionErrorScreen() {
 
         let animationView: LOTAnimationView = {
             let view = LOTAnimationView(name: "no_connection")
@@ -321,10 +322,83 @@ class StartController: UIViewController {
     
     @objc fileprivate func tryAgainTapped() {
         noInternetContainerView.removeFromSuperview()
-        checkIfFirstRun()
+        downloadUpdates()
     }
     
-    fileprivate func showFirstLoadScreen(message: String) {
+    fileprivate func showMessageScreen(message: String) {
+        let containerView: UIView = {
+            let view = UIView()
+            view.tag = 99
+            view.backgroundColor = UIColor(white: 0, alpha: 0.8)
+            return view
+        }()
+        
+        let messageLabel: UILabel = {
+            let label = UILabel()
+            label.font = UIFont.defaultFont()
+            label.text = message
+            label.textColor = .white
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            return label
+        }()
+        
+        let continueButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setTitleColor(.white, for: .normal)
+            button.setTitle("Continue", for: .normal)
+            button.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
+            return button
+        }()
+        
+        let laterButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setTitleColor(.white, for: .normal)
+            button.setTitle("Do It Later", for: .normal)
+            button.addTarget(self, action: #selector(laterTapped), for: .touchUpInside)
+            return button
+        }()
+        
+        view.addSubview(containerView)
+        containerView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        
+        containerView.addSubview(messageLabel)
+        messageLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 30, paddingBottom: 0, paddingRight: 30)
+        messageLabel.centerVertically(in: containerView, offset: -50)
+        
+        let buttonsStackView = UIStackView(arrangedSubviews: [continueButton, laterButton])
+        buttonsStackView.axis = .horizontal
+        buttonsStackView.spacing = 100
+        
+        containerView.addSubview(buttonsStackView)
+        buttonsStackView.centerHorizontaly(in: containerView, offset: 0)
+        buttonsStackView.anchor(top: messageLabel.bottomAnchor, left: nil, bottom: nil, right: nil, paddingTop: 50, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+    }
+    
+    @objc fileprivate func laterTapped() {
+        let messageView = self.view.viewWithTag(99)
+        messageView?.removeFromSuperview()
+        displayTitle()
+    }
+    
+    @objc fileprivate func continueTapped() {
+        let messageView = self.view.viewWithTag(99)
+        messageView?.removeFromSuperview()
+        downloadUpdates()
+    }
+    
+    fileprivate func downloadUpdates() {
+        if Internet.isConnected() {
+            self.showLoadingScreen(message: "Downloading New Content. Please Wait")
+            self.downloadStories()
+            self.downloadGlossary()
+        }
+        else {
+            showNoConnectionErrorScreen()
+        }
+    }
+    
+    fileprivate func showLoadingScreen(message: String) {
         
         let animationView: LOTAnimationView = {
             let view = LOTAnimationView(name: "wave_loading")
@@ -337,24 +411,25 @@ class StartController: UIViewController {
         let descriptionLabel: UILabel = {
             let label = UILabel()
             label.font = UIFont.defaultFont()
-            label.text = message //"The application is getting ready for first use. Please wait."
+            label.text = message
             label.textColor = .white
             label.numberOfLines = 0
             label.textAlignment = .center
             return label
         }()
         
-        view.addSubview(firstLoadContainerView)
-        firstLoadContainerView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        view.addSubview(loadingContainerView)
+        loadingContainerView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         
         animationView.setSizeAnchors(height: 200, width: 200)
-        firstLoadContainerView.addSubview(animationView)
-        animationView.centerHorizontaly(in: firstLoadContainerView, offset: 0)
-        animationView.centerVertically(in: firstLoadContainerView, offset: -50)
+        loadingContainerView.addSubview(animationView)
+        animationView.centerHorizontaly(in: loadingContainerView, offset: 0)
+        animationView.centerVertically(in: loadingContainerView, offset: -50)
         
-        firstLoadContainerView.addSubview(descriptionLabel)
-        descriptionLabel.anchor(top: animationView.bottomAnchor, left: firstLoadContainerView.leftAnchor, bottom: nil, right: firstLoadContainerView.rightAnchor, paddingTop: -40, paddingLeft: 50, paddingBottom: 0, paddingRight: 50)
+        loadingContainerView.addSubview(descriptionLabel)
+        descriptionLabel.anchor(top: animationView.bottomAnchor, left: loadingContainerView.leftAnchor, bottom: nil, right: loadingContainerView.rightAnchor, paddingTop: -40, paddingLeft: 50, paddingBottom: 0, paddingRight: 50)
         
         animationView.play()
     }
+
 }

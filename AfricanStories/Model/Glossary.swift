@@ -20,7 +20,6 @@ class GlossaryList {
             allObject.forEach({ (snapshot) in
                 let word = snapshot.key
                 let meaning = snapshot.value as! String
-//                guard let itemDictionary = snapshot.value as? [String:Any] else {return}
                 let item = GlossaryItem(word: word, meaning: meaning)
                 item.saveItemToCoreData()
             })

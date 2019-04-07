@@ -27,7 +27,7 @@ class BookCoverCell: UICollectionViewCell {
     
     var price: NSDecimalNumber = 0 {
         didSet {
-            let priceString = "BUY $\(price)"
+            let priceString = "BUY \(productCurrencySymbol)\(price)"
             self.buyButton.setTitle(priceString, for: .normal)
         }
     }

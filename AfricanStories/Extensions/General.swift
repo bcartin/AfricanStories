@@ -35,7 +35,7 @@ extension UIFont {
         case .iPad:
             return UIFont(name: "MarkerFelt-Thin", size: 32)!
         case .iPhone:
-            return UIFont(name: "MarkerFelt-Thin", size: 16)!
+            return UIFont(name: "MarkerFelt-Thin", size: 17)!
         }
     }
     

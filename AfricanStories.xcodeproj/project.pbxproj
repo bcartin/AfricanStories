@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		5562DCAEC41A9C1CE63B193A /* Pods_AfricanStories.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECF824ABA6C3B6C6F71644F /* Pods_AfricanStories.framework */; };
 		CB38274721B71341002D4933 /* cute.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CB38274621B71340002D4933 /* cute.mp3 */; };
-		CB38275121B86ADE002D4933 /* books.json in Resources */ = {isa = PBXBuildFile; fileRef = CB38275021B86ADD002D4933 /* books.json */; };
 		CB38275321B8708A002D4933 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB38275221B87089002D4933 /* GoogleService-Info.plist */; };
 		CB38275521C00F12002D4933 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB38275421C00F12002D4933 /* Constants.swift */; };
 		CB38275721C02FC6002D4933 /* Internet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB38275621C02FC6002D4933 /* Internet.swift */; };
@@ -21,6 +20,7 @@
 		CB3B2B9421AF293800767D43 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B2B9321AF293800767D43 /* SettingsController.swift */; };
 		CB9C2F76219B666500768143 /* Page.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9C2F75219B666500768143 /* Page.swift */; };
 		CB9C2F78219CBFDD00768143 /* GlossaryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9C2F77219CBFDD00768143 /* GlossaryController.swift */; };
+		CB9D3C692225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json in Resources */ = {isa = PBXBuildFile; fileRef = CB9D3C682225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json */; };
 		CBD60443218C8A40008251E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBD60442218C8A40008251E0 /* AppDelegate.swift */; };
 		CBD60448218C8A40008251E0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CBD60446218C8A40008251E0 /* Main.storyboard */; };
 		CBD6044A218C8A43008251E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CBD60449218C8A43008251E0 /* Assets.xcassets */; };
@@ -44,13 +44,14 @@
 		CBF0F57921E5769300B77CE6 /* Glossary.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF0F57821E5769300B77CE6 /* Glossary.swift */; };
 		CBF0F57B21F10B8800B77CE6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBF0F57A21F10B8800B77CE6 /* StoreKit.framework */; };
 		CBF0F57D21F113B100B77CE6 /* IAPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF0F57C21F113B100B77CE6 /* IAPService.swift */; };
+		CBF420D02259359D00827E3F /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF420CF2259359D00827E3F /* DataService.swift */; };
+		CBF420D42259579400827E3F /* stories.json in Resources */ = {isa = PBXBuildFile; fileRef = CBF420D32259579400827E3F /* stories.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5A319DC318E756D970D72710 /* Pods-AfricanStories.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AfricanStories.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AfricanStories/Pods-AfricanStories.debug.xcconfig"; sourceTree = "<group>"; };
 		6100A9C7D6F1C54D608AEA0E /* Pods-AfricanStories.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AfricanStories.release.xcconfig"; path = "Pods/Target Support Files/Pods-AfricanStories/Pods-AfricanStories.release.xcconfig"; sourceTree = "<group>"; };
 		CB38274621B71340002D4933 /* cute.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cute.mp3; sourceTree = "<group>"; };
-		CB38275021B86ADD002D4933 /* books.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = books.json; sourceTree = "<group>"; };
 		CB38275221B87089002D4933 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CB38275421C00F12002D4933 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		CB38275621C02FC6002D4933 /* Internet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Internet.swift; sourceTree = "<group>"; };
@@ -62,6 +63,7 @@
 		CB3B2B9321AF293800767D43 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		CB9C2F75219B666500768143 /* Page.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page.swift; sourceTree = "<group>"; };
 		CB9C2F77219CBFDD00768143 /* GlossaryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlossaryController.swift; sourceTree = "<group>"; };
+		CB9D3C682225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "aVisitToTheOrphanage-pages.json"; sourceTree = "<group>"; };
 		CBD6043F218C8A40008251E0 /* AfricanStories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AfricanStories.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBD60442218C8A40008251E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CBD60447218C8A40008251E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -87,6 +89,8 @@
 		CBF0F57821E5769300B77CE6 /* Glossary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glossary.swift; sourceTree = "<group>"; };
 		CBF0F57A21F10B8800B77CE6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CBF0F57C21F113B100B77CE6 /* IAPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPService.swift; sourceTree = "<group>"; };
+		CBF420CF2259359D00827E3F /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		CBF420D32259579400827E3F /* stories.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = stories.json; sourceTree = "<group>"; };
 		EECF824ABA6C3B6C6F71644F /* Pods_AfricanStories.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AfricanStories.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -175,7 +179,8 @@
 				CBD6045A21923E3E008251E0 /* Extensions */,
 				CBD60442218C8A40008251E0 /* AppDelegate.swift */,
 				CBD60446218C8A40008251E0 /* Main.storyboard */,
-				CB38275021B86ADD002D4933 /* books.json */,
+				CB9D3C682225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json */,
+				CBF420D32259579400827E3F /* stories.json */,
 				CB38275821C048E4002D4933 /* no_connection.json */,
 				CB38275E21C0545E002D4933 /* wave_loading.json */,
 				CB38274621B71340002D4933 /* cute.mp3 */,
@@ -234,6 +239,7 @@
 				CBF0F57621E575F000B77CE6 /* GlossaryItem.swift */,
 				CBF0F57821E5769300B77CE6 /* Glossary.swift */,
 				CBF0F57C21F113B100B77CE6 /* IAPService.swift */,
+				CBF420CF2259359D00827E3F /* DataService.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -305,10 +311,10 @@
 			files = (
 				CB38275321B8708A002D4933 /* GoogleService-Info.plist in Resources */,
 				CB38275F21C0545F002D4933 /* wave_loading.json in Resources */,
-				CB38275121B86ADE002D4933 /* books.json in Resources */,
 				CBF0F57321E51E4300B77CE6 /* tenderness.mp3 in Resources */,
 				CBF0F57421E51E4300B77CE6 /* ukulele.mp3 in Resources */,
 				CBF0F57521E51E4300B77CE6 /* india.mp3 in Resources */,
+				CBF420D42259579400827E3F /* stories.json in Resources */,
 				CB38274721B71341002D4933 /* cute.mp3 in Resources */,
 				CBF0F57221E51E4300B77CE6 /* onceagain.mp3 in Resources */,
 				CBD6044D218C8A43008251E0 /* LaunchScreen.storyboard in Resources */,
@@ -316,6 +322,7 @@
 				CBD6044A218C8A43008251E0 /* Assets.xcassets in Resources */,
 				CBD60448218C8A40008251E0 /* Main.storyboard in Resources */,
 				CB38275921C048E4002D4933 /* no_connection.json in Resources */,
+				CB9D3C692225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,6 +385,7 @@
 				CBD60462219339F6008251E0 /* BookCoverCell.swift in Sources */,
 				CB3B2B8B21ADCA8500767D43 /* StartController.swift in Sources */,
 				CB9C2F78219CBFDD00768143 /* GlossaryController.swift in Sources */,
+				CBF420D02259359D00827E3F /* DataService.swift in Sources */,
 				CB9C2F76219B666500768143 /* Page.swift in Sources */,
 				CBD60455218C8B33008251E0 /* UIViewExtension.swift in Sources */,
 				CBD6045E21923E7E008251E0 /* StoryController.swift in Sources */,

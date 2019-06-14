@@ -109,6 +109,7 @@ extension SKPaymentTransactionState {
         case .purchased: return C_PURCHASED
         case .purchasing: return C_PURCHASING
         case .restored: return C_RESTORED
+        default: return C_FAILED
         }
     }
 }

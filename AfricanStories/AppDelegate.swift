@@ -17,8 +17,8 @@ enum devices {
 }
 
 var deviceType: devices = .iPhone
-var player = AVAudioPlayer()
-var storyPlayer = AVAudioPlayer()
+var player: AVAudioPlayer!
+var storyPlayer: AVAudioPlayer!
 let audioPath = Bundle.main.path(forResource: "cute", ofType: "mp3")
 var isSoundOn: Bool = true
 
@@ -44,12 +44,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             deviceType = .iPhone
         }
         
-        do{
+        do {
             try player = AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
             playAudio()
         }
-        catch{
-            
+        catch  {
+            print(error)
         }
         
         FirebaseApp.configure()

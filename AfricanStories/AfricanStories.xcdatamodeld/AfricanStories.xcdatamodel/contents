@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="18D109" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14490.99" systemVersion="18F132" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Glossary" representedClassName="Glossary" syncable="YES" codeGenerationType="class">
         <attribute name="meaning" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="word" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="Pages" representedClassName="Pages" syncable="YES" codeGenerationType="class">
+        <attribute name="imageIsDownloaded" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="imageUrl" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="pageImage" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="pageNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
@@ -40,7 +41,7 @@
     </entity>
     <elements>
         <element name="Glossary" positionX="-54" positionY="135" width="128" height="75"/>
-        <element name="Pages" positionX="-54" positionY="117" width="128" height="120"/>
+        <element name="Pages" positionX="-54" positionY="117" width="128" height="135"/>
         <element name="Stories" positionX="-63" positionY="-18" width="128" height="420"/>
     </elements>
 </model>

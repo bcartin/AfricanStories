@@ -23,12 +23,10 @@ class StoryController: UIPageViewController {
         createContentPages()
         dataSource = self
         delegate = self
-        let vc = StoryContentController()
-        vc.pageNumber = pages[0].pageNumber
+        let page = pages[0]
+        let vc = StoryContentController(page: page)
         vc.pageNumberString = pageNumbers[0]
         vc.storyText = pages[0].pageText
-        vc.invisibleText = pages[0].pageText
-        vc.storyImage.image = pages[0].pageImage
         setViewControllers([vc], direction: .forward, animated: true, completion: nil)
         playAudio()
     }
@@ -70,8 +68,9 @@ class StoryController: UIPageViewController {
             (index > pages.count) {
             return nil
         }
-        let dataViewController = StoryContentController()
+        let dataViewController: StoryContentController
         if index == pages.count {
+            dataViewController = StoryContentController(page: pages[index-1])
             dataViewController.pageNumber = pages[index-1].pageNumber + 1
             dataViewController.textContainerView.alpha = 0
             dataViewController.storyImage.alpha = 0
@@ -83,10 +82,11 @@ class StoryController: UIPageViewController {
             
         }
         else {
-            dataViewController.pageNumber = pages[index].pageNumber
+            dataViewController = StoryContentController(page: pages[index])
             dataViewController.pageNumberString = pageNumbers[index]
-            dataViewController.invisibleText = pages[index].pageText
-            dataViewController.storyImage.image = pages[index].pageImage
+            if pages[index].pageText.count <= 0 {
+                dataViewController.textContainerView.alpha = 0
+            }
         }
         return dataViewController
     }

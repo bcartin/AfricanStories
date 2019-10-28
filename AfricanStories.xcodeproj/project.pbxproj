@@ -18,6 +18,7 @@
 		CB3B2B8821AC90C200767D43 /* PreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B2B8721AC90C200767D43 /* PreviewController.swift */; };
 		CB3B2B8B21ADCA8500767D43 /* StartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B2B8A21ADCA8500767D43 /* StartController.swift */; };
 		CB3B2B9421AF293800767D43 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B2B9321AF293800767D43 /* SettingsController.swift */; };
+		CB76546A22B40E8F00B35936 /* CustomStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB76546922B40E8F00B35936 /* CustomStyles.swift */; };
 		CB9C2F76219B666500768143 /* Page.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9C2F75219B666500768143 /* Page.swift */; };
 		CB9C2F78219CBFDD00768143 /* GlossaryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9C2F77219CBFDD00768143 /* GlossaryController.swift */; };
 		CB9D3C692225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json in Resources */ = {isa = PBXBuildFile; fileRef = CB9D3C682225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json */; };
@@ -61,6 +62,7 @@
 		CB3B2B8721AC90C200767D43 /* PreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewController.swift; sourceTree = "<group>"; };
 		CB3B2B8A21ADCA8500767D43 /* StartController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartController.swift; sourceTree = "<group>"; };
 		CB3B2B9321AF293800767D43 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
+		CB76546922B40E8F00B35936 /* CustomStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomStyles.swift; sourceTree = "<group>"; };
 		CB9C2F75219B666500768143 /* Page.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page.swift; sourceTree = "<group>"; };
 		CB9C2F77219CBFDD00768143 /* GlossaryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlossaryController.swift; sourceTree = "<group>"; };
 		CB9D3C682225CFB8005CECF1 /* aVisitToTheOrphanage-pages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "aVisitToTheOrphanage-pages.json"; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				CBD604632194AF95008251E0 /* General.swift */,
 				CB38275421C00F12002D4933 /* Constants.swift */,
 				CB38275621C02FC6002D4933 /* Internet.swift */,
+				CB76546922B40E8F00B35936 /* CustomStyles.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -385,6 +388,7 @@
 				CB38275521C00F12002D4933 /* Constants.swift in Sources */,
 				CBD60462219339F6008251E0 /* BookCoverCell.swift in Sources */,
 				CB3B2B8B21ADCA8500767D43 /* StartController.swift in Sources */,
+				CB76546A22B40E8F00B35936 /* CustomStyles.swift in Sources */,
 				CB9C2F78219CBFDD00768143 /* GlossaryController.swift in Sources */,
 				CBF420D02259359D00827E3F /* DataService.swift in Sources */,
 				CB9C2F76219B666500768143 /* Page.swift in Sources */,

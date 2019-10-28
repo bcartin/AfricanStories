@@ -92,20 +92,18 @@ class Story {
             do {
                 let results = try managedContext.fetch(request)
                 if results.count > 0 {
-//                    var count = 1
                     results.forEach { (result) in
                         let object = result as! NSManagedObject
                         guard let storyId = object.value(forKey: C_STORYID) as? String else {return}
                         guard let pageNumber = object.value(forKey: C_PAGENUMBER) as? Int else {return}
                         guard let pageText = object.value(forKey: C_PAGETEXT) as? String else {return}
+                        guard let imageIsDownloaded = object.value(forKey: C_IMAGEISDOWNLOADED) as? Bool else {return}
                         guard let imageData = object.value(forKey: C_PAGEIMAGE) as? Data else {return}
                         let pageImage = UIImage(data: imageData)
-                        let page = Page(storyId: storyId, pageText: pageText, pageNumber: pageNumber, imageUrl: "")
+                        let page = Page(storyId: storyId, pageText: pageText, pageNumber: pageNumber, imageUrl: "", imageIsDownloaded: imageIsDownloaded)
                         page.pageImage = pageImage
                         self.pages.append(page)
                         self.pages.sort {$0.pageNumber < $1.pageNumber}
-//                        print(count, pageNumber, self.pages.count, self.pages[count-1].pageNumber)
-//                        count += 1
                     }
                     DispatchQueue.main.async {
                         completion(nil)

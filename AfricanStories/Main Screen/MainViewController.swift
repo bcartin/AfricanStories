@@ -11,6 +11,8 @@ import AVFoundation
 import CoreData
 import FirebaseAuth
 
+var imageCache = NSCache<NSString, UIImage>()
+
 enum bookFrameColor: String {
     case blue = "bookBlue.png"
     case red = "bookRed.png"
@@ -353,8 +355,7 @@ class MainViewController: UIViewController, Alertable {
         
         self.shouldPresentDownloadingContentView(true)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(3)) {
-//            self.deleteCoreData()
-            self.downloadUpdates()
+            IAPService.shared.restorePurchases()
         }
     }
     
@@ -401,36 +402,36 @@ class MainViewController: UIViewController, Alertable {
         UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
     }
     
-    fileprivate func downloadUpdates() {
-        downloadStories()
-        downloadGlossary()
-    }
-    
-    fileprivate func downloadGlossary() {
-        let glossary = GlossaryList()
-        glossary.loadWordsFromWeb()
-    }
-    
-    fileprivate func downloadStories() {
-        DataService.shared.savePreloadedStoriesToCoreData { (error) in
-            if let err = error {
-                self.shouldPresentDownloadingContentView(false)
-                self.showAlert(title: C_ERROR, msg: err.localizedDescription)
-                UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
-                return
-            }
-            DataService.shared.saveFirstStoryPages(handler: { (error) in
-                if let err = error {
-                    self.shouldPresentDownloadingContentView(false)
-                    self.showAlert(title: C_ERROR, msg: err.localizedDescription)
-                    UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
-                    return
-                }
-            })
-            self.downloadWebStories()
-            IAPService.shared.restorePurchases()
-        }
-    }
+//    fileprivate func downloadUpdates() {
+//        downloadStories()
+//        downloadGlossary()
+//    }
+//
+//    fileprivate func downloadGlossary() {
+//        let glossary = GlossaryList()
+//        glossary.loadWordsFromWeb()
+//    }
+//
+//    fileprivate func downloadStories() {
+//        DataService.shared.savePreloadedStoriesToCoreData { (error) in
+//            if let err = error {
+//                self.shouldPresentDownloadingContentView(false)
+//                self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+//                UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
+//                return
+//            }
+//            DataService.shared.saveFirstStoryPages(handler: { (error) in
+//                if let err = error {
+//                    self.shouldPresentDownloadingContentView(false)
+//                    self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+//                    UserDefaults.standard.set("1999-01-01", forKey: C_LASTUPDATE)
+//                    return
+//                }
+//            })
+//            self.downloadWebStories()
+//            IAPService.shared.restorePurchases()
+//        }
+//    }
     
     fileprivate func downloadWebStories() {
         DataService.shared.downloadStoriesfromWeb { (error) in
@@ -471,6 +472,7 @@ class MainViewController: UIViewController, Alertable {
    
     
     @objc fileprivate func purchaseFailed(_ notification: NSNotification) {
+        self.shouldPresentDownloadingContentView(false)
         self.showAlert(title: "ERROR", msg: "Purchase could not be completed. \nPlease try again")
     }
     
@@ -540,18 +542,7 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             if filteredStories[indexPath.item].purchased {
                 player.stop()
                 let story = self.filteredStories[indexPath.item]
-                if story.pages.count == story.totalPages {
-                    presentStory(story: story)
-                }
-                else {
-                    story.loadPagesFromCoreData { (error) in
-                        if let err = error {
-                            self.showAlert(title: C_ERROR, msg: err.localizedDescription)
-                            return
-                        }
-                        self.presentStory(story: story)
-                    }
-                }
+                presentStory(story: story)
             }
             else {
                 let vc = PreviewController()
@@ -568,19 +559,27 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     }
     
     func presentStory(story: Story) {
-        let storyDetailController = StoryController()
-        let pages = story.pages
-        storyDetailController.pages = pages
-        storyDetailController.story = story
-        DispatchQueue.main.async {
-            self.navigationController?.pushViewController(storyDetailController, animated: true)
+        DataService.shared.loadPagesFromCoreData(storyId: story.storyId) { (error, pages) in
+            if let err = error {
+                self.showAlert(title: C_ERROR, msg: err.localizedDescription)
+                return
+            }
+            let storyDetailController = StoryController()
+//            let pages = story.pages
+            storyDetailController.pages = pages
+            storyDetailController.story = story
+            DispatchQueue.main.async {
+                self.navigationController?.pushViewController(storyDetailController, animated: true)
+            }
         }
+        
     }
     
     
 }
 
 extension MainViewController: UIScrollViewDelegate {
+    
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let indexPathsArray = booksCollectionView.indexPathsForVisibleItems
         var indexArray: [Int] = []

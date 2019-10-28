@@ -10,6 +10,8 @@ import UIKit
 
 class StoryContentController: UIViewController {
     
+    var page: Page
+    
     let audioOnImage = UIImage(named: "audio_on.png")?.withRenderingMode(.alwaysOriginal)
     let audioOffImage = UIImage(named: "audio_off.png")?.withRenderingMode(.alwaysOriginal)
     var glossaryViewController: GlossaryController!
@@ -40,6 +42,13 @@ class StoryContentController: UIViewController {
         button.imageView?.clipsToBounds = true
         button.addTarget(self, action: #selector(homeButtonTapped), for: .touchUpInside)
         return button
+    }()
+    
+    let imageDownloading: UIImageView = {
+        let iv = UIImageView(image: #imageLiteral(resourceName: "imageIsDownloading"))
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        return iv
     }()
     
     let audioButton: UIButton = {
@@ -100,25 +109,57 @@ class StoryContentController: UIViewController {
         return label
     }()
     
-    let storyImage: UIImageView = {
-        let iv = UIImageView()
+    let storyImage: CustomImageView = {
+        let iv = CustomImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
+        iv.image = #imageLiteral(resourceName: "imageIsDownloading")
         return iv
     }()
-
+    
+    
+    init(page: Page) {
+        self.page = page
+        self.pageNumber = page.pageNumber
+        self.storyText = page.pageText
+        self.invisibleText = page.pageText
+        super.init(nibName: nil, bundle: nil)
+        self.storyImage.image = #imageLiteral(resourceName: "imageIsDownloading")
+        loadPageImage()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    fileprivate func loadPageImage() {
+        if page.imageIsDownloaded {
+            self.imageDownloading.alpha = 0
+            self.storyImage.image = page.pageImage
+        }
+        else {
+            self.storyImage.image = #imageLiteral(resourceName: "imageIsDownloading")
+            self.storyImage.loadImage(from: page.imageUrl)
+        }
+    }
+    
     
     fileprivate func setupUI() {
         view.addSubview(backgroundImage)
         backgroundImage.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         
         let height: CGFloat = view.frame.height
+        
+        view.addSubview(imageDownloading)
+        imageDownloading.setSizeAnchors(height: height, width: height / 0.75)
+        imageDownloading.centerHorizontaly(in: view, offset: 0)
+        imageDownloading.centerVertically(in: view, offset: 0)
 
         view.addSubview(storyImage)
         storyImage.setSizeAnchors(height: height, width: height / 0.75)
         storyImage.centerHorizontaly(in: view, offset: 0)
         storyImage.centerVertically(in: view, offset: 0)
-        
+
         if isFinished {
             showCreditsView()
         }

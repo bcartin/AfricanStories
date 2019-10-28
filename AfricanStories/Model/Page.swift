@@ -22,12 +22,14 @@ class Page {
     let pageNumber: Int
     let imageUrl: String
     var pageImage: UIImage?
+    var imageIsDownloaded: Bool
     
-    init(storyId:String, pageText: String, pageNumber: Int, imageUrl: String) {
+    init(storyId:String, pageText: String, pageNumber: Int, imageUrl: String, imageIsDownloaded: Bool) {
         self.storyId = storyId
         self.pageText = pageText
         self.pageNumber = pageNumber
         self.imageUrl = imageUrl
+        self.imageIsDownloaded = imageIsDownloaded
     }
     
     init(dictionary: [String:Any]) {
@@ -35,6 +37,7 @@ class Page {
         self.pageText = dictionary[C_PAGETEXT] as! String
         self.pageNumber = dictionary[C_PAGENUMBER] as! Int
         self.imageUrl = dictionary[C_IMAGEURL] as! String
+        self.imageIsDownloaded = false
     }
 
     
